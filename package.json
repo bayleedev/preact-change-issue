@@ -1,5 +1,5 @@
 {
-  "name": "testing-workshop",
+  "name": "testing",
   "version": "0.0.1",
   "dependencies": {
     "@testing-library/dom": "^8.1.0",
@@ -22,7 +22,4 @@
     "react": "npm:@preact/compat@^0.0.3",
     "react-dom": "npm:@preact/compat@^0.0.3"
   },
-  "license": "UNLICENSED",
-  "private": true,
-  "repository": "git@github.com:newsela/lyceum.git"
 }

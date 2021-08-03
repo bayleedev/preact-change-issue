@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { waitFor, render, fireEvent, screen } from '@testing-library/preact';
+import { act, createEvent, waitFor, render, fireEvent, screen } from '@testing-library/preact';
 
 const ProfileViewer = () => {
   const [body, setBody] = useState('default_value');
@@ -15,7 +15,7 @@ const ProfileViewer = () => {
           placeholder='meow'
           data-testid='comment-body'
           value={body}
-          onChange={(ev) => setBody('rawwwwr')}
+          onChange={(ev) => setBody('on_change_value')}
         />
       </label>
       <div data-testid='body-data'>{body}</div>
@@ -33,14 +33,32 @@ test('can change textarea', async () => {
   }
 
   // Change
-  const field = await screen.getByRole('textbox', { name: 'Comment Body' });
-  console.log('src', fireEvent.change.toString());
-  return fireEvent.change(field, { value: 'user123', target: { value: 'user234' } }).then(() => {
-    // Assertion
-    const bodyData = screen.getByTestId('body-data');
-    console.log('bodyData', bodyData.textContent);
+  if (false) {
+    const field = await screen.getByRole('textbox', { name: 'Comment Body' });
+    fireEvent.change(field, {
+      value: 'user123', // the docs just suggest setting this one
+    });
+    expect(field.value).toEqual('user123'); // Received: "default_value"
+  }
 
+  // Change, working
+  {
+    const field = await screen.getByRole('textbox', { name: 'Comment Body' });
+    const changeEvent = createEvent.change(field, {
+      value: 'user123', // BROKE
+      target: { value: 'user234' }, // ADD
+    });
+    changeEvent.inputType = 'insertText'; // ADD
+    await act(() => {
+      return field.l.inputfalse(changeEvent);
+      // return field.dispatchEvent(changeEvent) // DEL
+    });
+    // Assertion
     const textarea = screen.getByRole('textbox', { name: 'Comment Body' });
-    console.log('textarea', textarea.value);
-  });
+    expect(textarea.value).toEqual('on_change_value'); // SUCCESS!
+
+    // Double assertion, to see if `body` was updated.
+    const bodyData = screen.getByTestId('body-data');
+    expect(bodyData.textContent).toEqual('on_change_value'); // SUCCESS!
+  }
 })
