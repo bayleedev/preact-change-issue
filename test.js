@@ -10,13 +10,15 @@ const ProfileViewer = () => {
       <input type='text' data-testid='comment-body-2' placeholder='blahhh' value={body} />
       <label>
         Comment Body
-        <textarea
+        <input
+          type="text"
           placeholder='meow'
           data-testid='comment-body'
           value={body}
           onChange={(ev) => setBody('rawwwwr')}
         />
       </label>
+      <div data-testid='body-data'>{body}</div>
       <input type='submit' value='Add Comment' />
     </div>
   );
@@ -31,14 +33,14 @@ test('can change textarea', async () => {
   }
 
   // Change
-  {
-    const field = await screen.findByRole('textbox', { name: 'Comment Body' });
-    fireEvent.change(field, { value: 'user123' });
-  }
+  const field = await screen.getByRole('textbox', { name: 'Comment Body' });
+  console.log('src', fireEvent.change.toString());
+  return fireEvent.change(field, { value: 'user123', target: { value: 'user234' } }).then(() => {
+    // Assertion
+    const bodyData = screen.getByTestId('body-data');
+    console.log('bodyData', bodyData.textContent);
 
-  // Assertion
-  {
-    const node = screen.getByRole('textbox', { name: 'Comment Body' });
-    expect(node.value).toEqual('user123');
-  }
+    const textarea = screen.getByRole('textbox', { name: 'Comment Body' });
+    console.log('textarea', textarea.value);
+  });
 })
